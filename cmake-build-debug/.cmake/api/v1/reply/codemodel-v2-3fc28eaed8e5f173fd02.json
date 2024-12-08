@@ -1,0 +1,96 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "lab2_block_cache",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "lab2::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-lab2-Debug-18ec3a4bcd087950c7fa.json",
+					"name" : "lab2",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "multithread_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-multithread_test-Debug-028bba44ef014aaa752d.json",
+					"name" : "multithread_test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "simple_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-simple_test-Debug-566ffdb564598e1417b5.json",
+					"name" : "simple_test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "substring_modified_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-substring_modified_test-Debug-8b646cd1572c9658c98a.json",
+					"name" : "substring_modified_test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test_suite::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test_suite-Debug-57f3139c86c68296a5c6.json",
+					"name" : "test_suite",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/user/CLionProjects/diy-page-cache-RaiseBan/cmake-build-debug",
+		"source" : "C:/Users/user/CLionProjects/diy-page-cache-RaiseBan"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 5
+	}
+}

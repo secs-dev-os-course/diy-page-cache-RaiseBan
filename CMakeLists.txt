@@ -1,35 +1,54 @@
 cmake_minimum_required(VERSION 3.10)
-project(Lab2Cache)
+project(lab2_block_cache)
 
-# Устанавливаем стандарт C++
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Определяем, что мы собираем DLL
-add_definitions(-DLAB2CACHE_EXPORTS)
+# Создаём динамическую библиотеку
+add_library(lab2 SHARED src/lab2.cpp)
 
-# Указываем путь к заголовочным файлам
-include_directories(${PROJECT_SOURCE_DIR}/include)
+# Указываем, что заголовочные файлы должны быть доступны для других целей
+target_include_directories(lab2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Создаем динамическую библиотеку
-add_library(lab2cache SHARED
-        src/lab2cache.cpp
-        src/block_cache.cpp
-        src/platform_win.cpp
-)
+# Добавляем тестовую программу simple_test
+add_executable(simple_test tests/simple_test.cpp)
 
-# Указываем, что библиотека должна экспортировать все символы
-set_target_properties(lab2cache PROPERTIES
-        WINDOWS_EXPORT_ALL_SYMBOLS ON
-)
+# Линкуем simple_test с библиотекой lab2
+target_link_libraries(simple_test PRIVATE lab2)
 
-# После сборки lab2cache, копируем DLL в директорию tests
-add_custom_command(TARGET lab2cache POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:lab2cache> ${CMAKE_BINARY_DIR}/tests/
-)
+# Добавляем тестовый набор test_suite
+add_executable(test_suite tests/test_suite.cpp)
 
-# Добавляем директорию tests
-add_subdirectory(tests)
+# Линкуем test_suite с библиотекой lab2
+target_link_libraries(test_suite PRIVATE lab2)
 
-# Добавляем исполняемый файл для создания тестового файла
-add_executable(create_testfile create_testfile.cpp)
+# Добавляем тестовый набор multithread_test
+add_executable(multithread_test tests/multithread_test.cpp)
+
+# Линкуем multithread_test с библиотекой lab2
+target_link_libraries(multithread_test PRIVATE lab2)
+
+
+# Добавляем тестовый набор substring_modified_test
+add_executable(substring_modified_test tests/substring_modified_test.cpp)
+
+# Линкуем substring_modified_test с библиотекой lab2
+target_link_libraries(substring_modified_test PRIVATE lab2)
+
+
+
+
+# Копируем DLL в директорию тестовых программ для Windows
+if (WIN32)
+    add_custom_command(TARGET simple_test POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:lab2> $<TARGET_FILE_DIR:simple_test>
+    )
+    add_custom_command(TARGET test_suite POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:lab2> $<TARGET_FILE_DIR:test_suite>
+    )
+    add_custom_command(TARGET multithread_test POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:lab2> $<TARGET_FILE_DIR:multithread_test>
+    )
+    add_custom_command(TARGET substring_modified_test POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:lab2> $<TARGET_FILE_DIR:substring_modified_test>
+    )
+endif()
