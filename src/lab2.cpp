@@ -116,7 +116,6 @@ public:
         int fd = next_fd_++;
         FileHandle fh(hFile);
         fh.known_size = size.QuadPart;
-        std::cout << "openFile: fd=" << fd << ", initial known_size=" << fh.known_size << std::endl;
         open_files_[fd] = fh;
         return fd;
     }
@@ -133,8 +132,6 @@ public:
         int res = flushFile(fd);
         if (res != 0) {
             std::cout << "ERROR: closeFile: Failed to flush file " << fd << std::endl;
-        } else {
-            std::cout << "closeFile: fd=" << fd << ", known_size=" << it->second.known_size << std::endl;
         }
 
         CloseHandle(it->second.handle);
@@ -156,8 +153,6 @@ public:
         }
 
         FileHandle& fh = it->second;
-        std::cout << "readFile: fd=" << fd << ", current_offset=" << fh.current_offset
-                  << ", known_size=" << fh.known_size << ", request count=" << count << std::endl;
 
         size_t bytes_read = 0;
         char* buffer = (char*)buf;
@@ -165,7 +160,6 @@ public:
         while (bytes_read < count) {
             if (fh.current_offset >= fh.known_size) {
                 // EOF
-                std::cout << "readFile: reached EOF at offset=" << fh.current_offset << std::endl;
                 break;
             }
 
@@ -173,16 +167,12 @@ public:
             size_t block_offset = (size_t)(fh.current_offset % BLOCK_SIZE);
             size_t bytes_left = count - bytes_read;
 
-            std::cout << "readFile: Getting block_number=" << block_number << " for reading." << std::endl;
             CacheBlock* cb = getCacheBlock({fd, block_number}, false);
             if (!cb) {
-                std::cout << "readFile: block_number=" << block_number << " returned EOF" << std::endl;
                 break;
             }
 
             if (block_offset >= cb->valid_bytes) {
-                std::cout << "readFile: block_number=" << block_number << ", block_offset=" << block_offset
-                          << " no more data in this block (valid_bytes=" << cb->valid_bytes << ")" << std::endl;
                 break;
             }
 
@@ -192,10 +182,8 @@ public:
 
             bytes_read += to_read;
             fh.current_offset += to_read;
-            std::cout << "readFile: block_number=" << block_number << " read " << to_read << " bytes" << std::endl;
         }
 
-        std::cout << "readFile: Total bytes read " << bytes_read << " from fd " << fd << std::endl;
         return (int64_t)bytes_read;
     }
 
@@ -206,7 +194,6 @@ public:
             return -1;
         }
         if (count == 0) {
-            std::cout << "lab2_write: 0 bytes" << std::endl;
             return 0;
         }
         if (count > MAX_WRITE_LIMIT) {
@@ -221,8 +208,6 @@ public:
         }
 
         FileHandle& fh = it->second;
-        std::cout << "writeFile: fd=" << fd << ", current_offset=" << fh.current_offset
-                  << ", known_size=" << fh.known_size << ", count=" << count << std::endl;
 
         size_t bytes_written = 0;
         const char* buffer = (const char*)buf;
@@ -247,19 +232,13 @@ public:
                 cb->valid_bytes = end_of_data;
             }
 
-            std::cout << "writeFile: wrote " << to_write << " bytes to block_number=" << block_number
-                      << ", new valid_bytes=" << cb->valid_bytes << std::endl;
-
             bytes_written += to_write;
             fh.current_offset += to_write;
         }
 
         if (fh.current_offset > fh.known_size) {
             fh.known_size = fh.current_offset;
-            std::cout << "writeFile: updated known_size=" << fh.known_size << std::endl;
         }
-
-        std::cout << "writeFile: total bytes_written=" << bytes_written << " fd=" << fd << std::endl;
 
         return (int64_t)bytes_written;
     }
@@ -269,7 +248,7 @@ public:
 
         auto it = open_files_.find(fd);
         if (it == open_files_.end()) {
-            std::cout << "ERROR: seekFile: Invalid file descriptor " << fd << std::endl;
+            std::cout << "ERROR: seekFile: Invalid fd" << std::endl;
             return -1;
         }
 
@@ -296,17 +275,13 @@ public:
         }
 
         fh.current_offset = new_offset;
-        std::cout << "seekFile: fd=" << fd << ", new_offset=" << fh.current_offset
-                  << " (in-memory, no direct SetFilePointerEx)" << std::endl;
         return fh.current_offset;
     }
 
 
     int fsyncFile(int fd) {
         std::lock_guard<std::mutex> lock(mutex_);
-        int res = flushFile(fd);
-        std::cout << "fsyncFile: fd=" << fd << ", result=" << res << std::endl;
-        return res;
+        return flushFile(fd);
     }
 
 private:
@@ -331,7 +306,6 @@ private:
             auto f_it = open_files_.find(key.fd);
             int64_t block_start = key.block_number * BLOCK_SIZE;
             if (!read_res && valid_bytes == 0) {
-                std::cout << "getCacheBlock: fd=" << key.fd << ", block=" << key.block_number << " EOF block" << std::endl;
                 return nullptr;
             }
 
@@ -344,8 +318,6 @@ private:
             }
 
             new_block.valid_bytes = valid_bytes;
-            std::cout << "getCacheBlock: fd=" << key.fd << ", block=" << key.block_number
-                      << " read from disk, valid_bytes=" << valid_bytes << std::endl;
         }
         cache_map_[key] = new_block;
         return &cache_map_[key];
@@ -363,7 +335,6 @@ private:
         li.QuadPart = key.block_number * BLOCK_SIZE;
         if (!SetFilePointerEx(fh.handle, li, NULL, FILE_BEGIN)) {
             out_valid_bytes = 0;
-            std::cout << "readBlockFromDisk: fd=" << key.fd << ", block=" << key.block_number << " SetFilePointerEx fail" << std::endl;
             return false;
         }
 
@@ -371,8 +342,6 @@ private:
         BOOL result = ReadFile(fh.handle, buffer, (DWORD)BLOCK_SIZE, &bytes_read, NULL);
 
         out_valid_bytes = bytes_read;
-        std::cout << "readBlockFromDisk: fd=" << key.fd << ", block=" << key.block_number
-                  << " bytes_read=" << bytes_read << ", result=" << (result ? "true":"false") << std::endl;
         return (result != 0);
     }
 
@@ -386,18 +355,15 @@ private:
         LARGE_INTEGER li;
         li.QuadPart = key.block_number * BLOCK_SIZE;
         if (!SetFilePointerEx(fh.handle, li, NULL, FILE_BEGIN)) {
-            std::cout << "writeBlockToDisk: fd=" << key.fd << ", block=" << key.block_number << " SetFilePointerEx failed" << std::endl;
             return false;
         }
 
         DWORD bytes_written = 0;
         BOOL res = WriteFile(fh.handle, buffer, (DWORD)BLOCK_SIZE, &bytes_written, NULL);
         if (!res || bytes_written != BLOCK_SIZE) {
-            std::cout << "writeBlockToDisk: fd=" << key.fd << ", block=" << key.block_number << " WriteFile failed" << std::endl;
             return false;
         }
 
-        std::cout << "writeBlockToDisk: fd=" << key.fd << ", block=" << key.block_number << " written successfully." << std::endl;
         return true;
     }
 
@@ -416,7 +382,6 @@ private:
                 }
                 writeBlockToDisk(it->first, it->second.data);
             }
-            std::cout << "evictBlock: fd=" << it->first.fd << ", block=" << it->first.block_number << std::endl;
             cache_map_.erase(it);
         }
     }
@@ -445,10 +410,7 @@ private:
                     memset(cb.data + cb.valid_bytes, 0, BLOCK_SIZE - cb.valid_bytes);
                 }
                 if (!writeBlockToDisk(key, cb.data)) {
-                    std::cout << "ERROR: flushFile: write failed fd=" << key.fd << ", block=" << key.block_number << std::endl;
                     success = false;
-                } else {
-                    std::cout << "flushFile: Block " << key.block_number << " for fd " << fd << " flushed to disk." << std::endl;
                 }
                 cb.dirty = false;
             }
@@ -467,14 +429,10 @@ private:
             int64_t aligned_size = ((fh.known_size + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE;
             LARGE_INTEGER li;
             li.QuadPart = aligned_size;
-            std::cout << "flushFile: fd=" << fd << " max_offset=" << max_offset
-                      << " known_size=" << fh.known_size << " aligned_size=" << aligned_size << std::endl;
             if (!SetFilePointerEx(fh.handle, li, NULL, FILE_BEGIN)) {
-                std::cout << "ERROR: flushFile: SetFilePointerEx failed fd=" << fd << std::endl;
                 success = false;
             } else {
                 if (!SetEndOfFile(fh.handle)) {
-                    std::cout << "ERROR: flushFile: SetEndOfFile failed fd=" << fd << std::endl;
                     success = false;
                 }
             }
@@ -484,7 +442,6 @@ private:
             cache_map_.erase(key);
         }
 
-        std::cout << "flushFile: fd=" << fd << ", success=" << success << ", final known_size=" << fh.known_size << std::endl;
         return success ? 0 : -1;
     }
 
@@ -526,7 +483,6 @@ LAB2_API int64_t lab2_write(int fd, const void* buf, size_t count) {
         return -1;
     }
     if (count == 0) {
-        std::cout << "lab2_write: 0 bytes" << std::endl;
         return 0;
     }
     if (count > MAX_WRITE_LIMIT) {
