@@ -1,0 +1,22 @@
+# ninja log v5
+10	2771	7553681763337070	CMakeFiles/lab2cache.dir/src/lab2cache.cpp.obj	de837003fe781bdb
+5	2858	7553681764207259	CMakeFiles/lab2cache.dir/src/block_cache.cpp.obj	8183d475eba58ee1
+14	2674	7553681762366847	CMakeFiles/lab2cache.dir/src/platform_win.cpp.obj	6d3d461d835f37af
+812	990	7553681745479859	create_testfile.exe	bdabb23dd89a6052
+2858	3141	7553681766407758	liblab2cache.dll	ffcbf24f7305e59
+17	811	7553681743738290	CMakeFiles/create_testfile.dir/create_testfile.cpp.obj	defcd09a65740b27
+0	12	0	clean	b26e0f42c341beb7
+22	2609	7553681761716704	tests/CMakeFiles/test_program.dir/test_program.cpp.obj	c8ec48c2fc0be66d
+2858	3141	7553681766407758	liblab2cache.dll.a	ffcbf24f7305e59
+1	151	7553684443325976	build.ninja	15bd30d15ac1986e
+3141	3278	7553681768368204	tests/test_program.exe	f43431b8ac7d1b7f
+0	12	0	clean	b26e0f42c341beb7
+13	705	7553684508625958	CMakeFiles/create_testfile.dir/create_testfile.cpp.obj	defcd09a65740b27
+706	880	7553684510286344	create_testfile.exe	bdabb23dd89a6052
+21	2450	7553684526056589	tests/CMakeFiles/test_program.dir/test_program.cpp.obj	c8ec48c2fc0be66d
+17	2589	7553684527466915	CMakeFiles/lab2cache.dir/src/platform_win.cpp.obj	6d3d461d835f37af
+9	2704	7553684528607169	CMakeFiles/lab2cache.dir/src/lab2cache.cpp.obj	de837003fe781bdb
+5	2798	7553684529537376	CMakeFiles/lab2cache.dir/src/block_cache.cpp.obj	8183d475eba58ee1
+2799	3113	7553684531964696	liblab2cache.dll	ffcbf24f7305e59
+2799	3113	7553684531964696	liblab2cache.dll.a	ffcbf24f7305e59
+3113	3250	7553684534035168	tests/test_program.exe	f43431b8ac7d1b7f

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\user\CLionProjects\diy-page-cache-RaiseBan\cmake-build-debug\CMakeFiles\7016f750896f65a48ad384529bb3eae0\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{29E0C1DB-223B-3604-84BB-86D408EFF3DD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

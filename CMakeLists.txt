@@ -1,15 +1,35 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
+project(Lab2Cache)
 
-project(my-project
-        VERSION 0.0.0
-        DESCRIPTION "My best project"
-        LANGUAGES C CXX
+# Устанавливаем стандарт C++
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Определяем, что мы собираем DLL
+add_definitions(-DLAB2CACHE_EXPORTS)
+
+# Указываем путь к заголовочным файлам
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+# Создаем динамическую библиотеку
+add_library(lab2cache SHARED
+        src/lab2cache.cpp
+        src/block_cache.cpp
+        src/platform_win.cpp
 )
 
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_C_STANDARD_REQUIRED True)
+# Указываем, что библиотека должна экспортировать все символы
+set_target_properties(lab2cache PROPERTIES
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+# После сборки lab2cache, копируем DLL в директорию tests
+add_custom_command(TARGET lab2cache POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:lab2cache> ${CMAKE_BINARY_DIR}/tests/
+)
 
-add_subdirectory(app)
+# Добавляем директорию tests
+add_subdirectory(tests)
+
+# Добавляем исполняемый файл для создания тестового файла
+add_executable(create_testfile create_testfile.cpp)

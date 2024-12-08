@@ -1,0 +1,7 @@
+C:/Users/user/CLionProjects/diy-page-cache-RaiseBan/cmake-build-debug/CMakeFiles/lab2cache.dir
+C:/Users/user/CLionProjects/diy-page-cache-RaiseBan/cmake-build-debug/CMakeFiles/create_testfile.dir
+C:/Users/user/CLionProjects/diy-page-cache-RaiseBan/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/user/CLionProjects/diy-page-cache-RaiseBan/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/user/CLionProjects/diy-page-cache-RaiseBan/cmake-build-debug/tests/CMakeFiles/test_program.dir
+C:/Users/user/CLionProjects/diy-page-cache-RaiseBan/cmake-build-debug/tests/CMakeFiles/edit_cache.dir
+C:/Users/user/CLionProjects/diy-page-cache-RaiseBan/cmake-build-debug/tests/CMakeFiles/rebuild_cache.dir
