@@ -285,6 +285,11 @@ public:
     }
 
 private:
+    std::unordered_map<int, FileHandle> open_files_;
+    std::unordered_map<BlockKey, CacheBlock, BlockKeyHash> cache_map_;
+    int next_fd_;
+    std::mutex mutex_;
+
     CacheManager() : next_fd_(0) {}
     ~CacheManager() {
         for (auto& p : open_files_) {
@@ -297,6 +302,11 @@ private:
         if (it != cache_map_.end()) {
             it->second.frequency++;
             return &it->second;
+        }
+
+        // Добавляем проверку лимита
+        if (cache_map_.size() >= MAX_CACHE_BLOCKS) {
+            evictBlock();
         }
 
         CacheBlock new_block;
@@ -316,12 +326,12 @@ private:
                     valid_bytes = (end > block_start) ? (size_t)(end - block_start) : 0;
                 }
             }
-
             new_block.valid_bytes = valid_bytes;
         }
         cache_map_[key] = new_block;
         return &cache_map_[key];
     }
+
 
     bool readBlockFromDisk(const BlockKey& key, char* buffer, size_t &out_valid_bytes) {
         auto it = open_files_.find(key.fd);
@@ -339,7 +349,7 @@ private:
         }
 
         DWORD bytes_read = 0;
-        BOOL result = ReadFile(fh.handle, buffer, (DWORD)BLOCK_SIZE, &bytes_read, NULL);
+        BOOL result = ReadFile(fh.handle, buffer, (DWORD)BLOCK_SIZE, &bytes_read, nullptr);
 
         out_valid_bytes = bytes_read;
         return (result != 0);
@@ -390,7 +400,9 @@ private:
         bool success = true;
         std::vector<BlockKey> blocks;
         for (auto &p : cache_map_) {
-            if (p.first.fd == fd) blocks.push_back(p.first);
+            if (p.first.fd == fd){
+                blocks.push_back(p.first);
+            }
         }
 
         auto f_it = open_files_.find(fd);
@@ -403,7 +415,9 @@ private:
 
         for (auto &key : blocks) {
             auto it = cache_map_.find(key);
-            if (it == cache_map_.end()) continue;
+            if (it == cache_map_.end()){
+                continue;
+            }
             CacheBlock &cb = it->second;
             if (cb.dirty) {
                 if (cb.valid_bytes < BLOCK_SIZE) {
@@ -445,10 +459,7 @@ private:
         return success ? 0 : -1;
     }
 
-    std::unordered_map<int, FileHandle> open_files_;
-    std::unordered_map<BlockKey, CacheBlock, BlockKeyHash> cache_map_;
-    int next_fd_;
-    std::mutex mutex_;
+
 };
 
 extern "C" {
