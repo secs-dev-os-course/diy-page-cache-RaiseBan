@@ -3,13 +3,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "windows.h"
 #include <cstring>
 
 // Размер буфера чтения (например, 1 МБ)
 const size_t BUFFER_SIZE = 1024ULL * 1024ULL;
 
 // Функция для вычисления префикс-функции (алгоритм КМП)
-std::vector<int> computePrefixFunction(const std::string& pattern) {
+std::vector<int> computePrefixFunction(const std::string &pattern) {
     size_t m = pattern.length();
     std::vector<int> pi(m, 0);
     int k = 0;
@@ -27,8 +28,8 @@ std::vector<int> computePrefixFunction(const std::string& pattern) {
 }
 
 // Функция для поиска подстроки в строке с использованием префикс-функции
-void KMPMatcher(const std::string& text, const std::string& pattern, const std::vector<int>& pi,
-                int& occurrences) {
+void KMPMatcher(const std::string &text, const std::string &pattern, const std::vector<int> &pi,
+                int &occurrences) {
     size_t n = text.length();
     size_t m = pattern.length();
     int q = 0;
@@ -39,14 +40,14 @@ void KMPMatcher(const std::string& text, const std::string& pattern, const std::
         if (pattern[q] == text[i]) {
             ++q;
         }
-        if (q == (int)m) {
+        if (q == (int) m) {
             occurrences++;
             q = pi[q - 1];
         }
     }
 }
 
-void search_in_file(const std::string& filename, const std::string& pattern, int repetitions) {
+void search_in_file(const std::string &filename, const std::string &pattern, int repetitions) {
     int fd = lab2_open(filename.c_str());
     if (fd == -1) {
         std::cerr << "Error: Failed to open file with lab2_open.\n";
@@ -89,16 +90,16 @@ void search_in_file(const std::string& filename, const std::string& pattern, int
             std::string text;
             // Добавляем перекрытие с предыдущим блоком
             if (!previous_overlap.empty()) {
-                text = previous_overlap + std::string(buffer.data(), (size_t)bytes_read);
+                text = previous_overlap + std::string(buffer.data(), (size_t) bytes_read);
             } else {
-                text = std::string(buffer.data(), (size_t)bytes_read);
+                text = std::string(buffer.data(), (size_t) bytes_read);
             }
 
             // Ищем подстроку в текущем блоке
             KMPMatcher(text, pattern, pi, total_occurrences);
 
             // Сохраняем перекрытие для следующего блока
-            if ((size_t)bytes_read >= pattern_length - 1) {
+            if ((size_t) bytes_read >= pattern_length - 1) {
                 previous_overlap = text.substr(text.length() - (pattern_length - 1));
             } else {
                 previous_overlap = text;
@@ -115,7 +116,7 @@ void search_in_file(const std::string& filename, const std::string& pattern, int
     std::cout << "Execution time: " << elapsed_time.count() << " sec.\n";
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     if (argc < 4) {
         std::cerr << "usage: " << argv[0] << " <filename> <substr> <number of repetitions>"
                   << "\n";
